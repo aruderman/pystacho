@@ -2,20 +2,20 @@
 # coding: utf-8
 
 import pandas as pd
-import pymatgen as mp
+#import pymatgen as mp
 import matplotlib.pyplot as plt
 
 from matminer.featurizers.structure import JarvisCFID
 import numpy as np
 import seaborn as sns
 
-import pymatgen.io.cif as mpcif
-from os.path import join
-from molmass import Formula
-import re
+#import pymatgen.io.cif as mpcif
+#from os.path import join
+#from molmass import Formula
+#import re
 
-from sklearn.cluster import KMeans,MeanShift
-from sklearn import decomposition
+from sklearn.cluster import KMeans #, MeanShift
+#from sklearn import decomposition
 
 
 def import_dataset(nombre):
