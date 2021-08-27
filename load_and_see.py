@@ -4,7 +4,6 @@
 import pandas as pd
 import pymatgen as mp
 import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
 
 from matminer.featurizers.structure import JarvisCFID
 import numpy as np
@@ -19,29 +18,28 @@ from sklearn.cluster import KMeans,MeanShift
 from sklearn import decomposition
 
 
-
-# importo el dataset dematerials project
 def import_dataset(nombre):
-    if nombre == 'MP_db':
-        path_MP_db = './MP-db/'
-        dataset = pd.concat([pd.read_csv(path_MP_db+'dataset1.csv'), pd.read_csv(path_MP_db+'dataset2.csv'), pd.read_csv(path_MP_db+'dataset3.csv')], ignore_index=True)
-    elif nombre == 'jarvis':
-        path_jarvis = './jarvis_features/'
-        dataset = pd.concat([pd.read_csv(path_jarvis+'jarvis1.csv'), pd.read_csv(path_jarvis+'jarvis2.csv'), pd.read_csv(path_jarvis+'jarvis3.csv'), 
-                             pd.read_csv(path_jarvis+'jarvis4.csv')], ignore_index=True)
+    """
+    función para importar datasets del materials project o features jarvis
+    """
+    path = "./datasets/"
+    
+    if nombre == "MP_db":
+    
+        mp_files = [pd.read_csv(path + f"mp{s}.csv.bz2") for s in range(1,4)]
+        dataset = pd.concat(mp_files, ignore_index=True)
+    
+    elif nombre == "jarvis":
+
+        jarvis_files = [pd.read_csv(path + f"jarvis{s}.csv.bz2") for s in range(11)]
+        dataset = pd.concat(jarvis_files, ignore_index=True)
+
         jarviscfid = JarvisCFID()
         names = jarviscfid.feature_labels()
         dataset.columns = ['Formula'] + names + ['Energy']
+
     return dataset        
 
-
-
-MP_db = import_dataset(nombre='MP_db')
-MP_db.head()
-
-
-jarvis = import_dataset(nombre='jarvis')
-jarvis
 
 
 
@@ -96,3 +94,10 @@ def plot_clusters(dataset, column1, column2, n_clusters):
 
 plot_clusters(MP_db, 'energy', 'energy_per_atom', 5)
 
+if __name__ == "__main__":
+
+    MP_db = import_dataset(nombre='MP_db')
+    print(MP_db.head())
+
+    jarvis = import_dataset(nombre='jarvis')
+    print(jarvis)
