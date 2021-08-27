@@ -51,27 +51,28 @@ def get_columns(dataset):
     return columns_df
 
 
-
-#Gráfico de distribución de valores
-
 def displot(dataset, column):
+    """
+    función para graficar la distribución de los valores según la columna que se
+    especifique
+    """
     ax = sns.displot(data=dataset, x=column)
     plt.show()
 
-displot(MP_db, 'energy_per_atom')
-
-
-#Gráfico de distribución de valores 2D
 
 def displot2D(dataset, column1, column2, kind):
+    """
+    función para gráficar una distribución de valores 2D a partir de las dos 
+    columnas especificadas
+    """
     ax = sns.displot(data=dataset, x=column1, y=column2, kind=kind)
     plt.show()
 
 
-displot2D(MP_db, 'energy', 'energy_per_atom', 'kde')
-
-
 def cluster_inertia(dataset, column1, column2):
+    """
+    cluster inertia KMeans
+    """
     dataset = dataset[[column1, column2]]
     scores = [KMeans(n_clusters=i+2).fit(dataset).inertia_ for i in range(10)]
     plt.plot(np.arange(2, 12), scores)
@@ -81,23 +82,27 @@ def cluster_inertia(dataset, column1, column2):
     plt.show()
 
 
-cluster_inertia(MP_db, 'energy', 'energy_per_atom')
-
-
 def plot_clusters(dataset, column1, column2, n_clusters):
+    """
+    plot KMeans
+    """
     dataset = dataset[[column1, column2]]
     labels = KMeans(n_clusters).fit(dataset).labels_
     ax = sns.scatterplot(data=dataset, x=column1, y=column2, hue=labels)
     plt.show()
 
 
-plot_clusters(MP_db, 'energy', 'energy_per_atom', 5)
-
 if __name__ == "__main__":
 
+    # main de materials project
     MP_db = import_dataset(nombre='MP_db')
     print(MP_db.head())
     print(get_columns(MP_db))
+    displot(MP_db, 'energy_per_atom')
+    displot2D(MP_db, 'energy', 'energy_per_atom', 'kde')
+    cluster_inertia(MP_db, 'energy', 'energy_per_atom')
+    plot_clusters(MP_db, 'energy', 'energy_per_atom', 5)
 
+    # main jarvis
     jarvis = import_dataset(nombre='jarvis')
     print(jarvis)
