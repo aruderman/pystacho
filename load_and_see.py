@@ -41,16 +41,15 @@ def import_dataset(nombre):
     return dataset        
 
 
-
-
-#función que me dice el nombre de las columnas del data set
-
 def get_columns(dataset):
+    """
+    función que dice el nombre de las columnas del dataset que le paso
+    """
     columns = dataset.columns.tolist()
     columns_df = pd.DataFrame({'Columns': columns})
+    
     return columns_df
 
-get_columns(MP_db)
 
 
 #Gráfico de distribución de valores
@@ -98,6 +97,7 @@ if __name__ == "__main__":
 
     MP_db = import_dataset(nombre='MP_db')
     print(MP_db.head())
+    print(get_columns(MP_db))
 
     jarvis = import_dataset(nombre='jarvis')
     print(jarvis)
