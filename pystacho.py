@@ -4,12 +4,16 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from matminer.featurizers.structure import JarvisCFID
+import pymatgen as mp
 import numpy as np
+from scipy.sparse.construct import random
 import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import Normalizer
 from lightgbm.sklearn import LGBMRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from os import join
 
 
 def import_dataset(nombre):
@@ -55,27 +59,28 @@ def get_important_features(model, target, n_jobs, n_features):
     Selecciono las filas de jarvis con valores en la variable target y
     calculo las features relevantes para esa variable
     """
+    target = load_target(target)
     y = target.iloc[:, -1].tolist()
+
+    jarvis = import_dataset('jarvis')
     x = jarvis[~target.iloc[:, -1].isnull()]
-    # ERROR! dataset no está definido y tampoco se lo está pasando como
-    # argumento de la función, esto tira error
-    x = x.drop(dataset.columns[0], axis=1)
+    x = x.drop(x.columns[0], axis=1)
 
     standard = Normalizer()
     x = pd.DataFrame(standard.fit_transform(x))
-    # ERROR! jarviscfid no está definida en esta función y tampoco se la
-    # pasa como argumento
-    names = jarviscfid.feature_labels()
 
-    X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.2,
-                                                          random_state=0)
-    lgbm = LGBMRegressor(n_estimators=2000, n_jobs=n_jobs)
-    lgbm.fit(X_train, y_train)
+    jarviscfid = JarvisCFID()
+    names = jarviscfid.feature_labels()
     x.columns = names
 
-    best_features_index = np.absolute(lgbm.feature_importances_).argsort()
+    if model == 'lgbm':
+        fit_model = LGBMRegressor(n_estimators=2000, n_jobs=n_jobs)
+        fit_model.fit(x, y)
+  
+
+    best_features_index = np.absolute(fit_model.feature_importances_).argsort()
     best_features_index = best_features_index[-n_features:][::1]
-    best_features_values = lgbm.feature_importances_[best_features_index]
+    best_features_values = fit_model.feature_importances_[best_features_index]
     best_features_names = x.iloc[:, best_features_index].columns
 
     return best_features_names, best_features_values
@@ -86,6 +91,78 @@ def plot_best_features(best_features_names, best_features_values):
     sns.set(font_scale=1.2)
     sns.barplot(y=best_features_names, x=best_features_values)
     plt.show()
+
+
+def train_model(model, target, best_features_names, **kwargs):
+    """
+    función que entrena los modelos según los targets y las best_features
+    """
+    target = load_target(target)
+    y = target.iloc[:, -1].tolist()
+
+    jarvis = import_dataset('jarvis')
+    x = jarvis[~target.iloc[:, -1].isnull()]
+    x = x.drop(x.columns[0], axis=1)
+
+    standard = Normalizer()
+    x = pd.DataFrame(standard.fit_transform(x))
+
+    jarviscfid = JarvisCFID()
+    names = jarviscfid.feature_labels()
+    x.columns = names
+
+    x = x[[best_features_names]]
+    X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.2, random_state=0)
+
+    if model == 'lgbm':
+        fit_model = LGBMRegressor(n_estimators=2000, n_jobs=n_jobs) #faltaría agregar más parámetros
+        fit_model.fit(X_train, y_train)
+        y_train_pred = fit_model.predict(X_train)
+        y_valid_pred = fit_model.predict(X_valid)
+
+        print('Conjunto de entrenamiento: modelo LGBMRegressor_red')
+        print('R2: ', r2_score(y_train,y_train_pred))
+        print('MAE: ', mean_absolute_error(y_train,y_train_pred))
+        print('MSE: ', mean_squared_error(y_train,y_train_pred, squared=False))
+
+        print('Conjunto de validación: modelo LGBMRegressor_red')
+        print('R2: ', r2_score(y_valid,y_valid_pred))
+        print('MAE: ', mean_absolute_error(y_valid,y_valid_pred))
+        print('MSE: ', mean_squared_error(y_valid,y_valid_pred, squared=False))
+          
+    return fit_model, standard
+
+
+def from_cif_to_jarvis(path, cif):
+    """
+    transforma un archivo cif en una fila jarvis
+    """
+    jarvis_features = []
+    
+    jarviscfid = JarvisCFID()
+    names = jarviscfid.feature_labels()
+    
+    cif_structure = mp.Structure.from_file(join(path, cif))
+    cif_feature = jarviscfid.featurize(cif_structure)
+    
+    jarvis_features.append(cif_feature)
+
+    return jarvis_features
+
+def fit_data(path, cif, fit_model, best_features_names, standard):
+    """
+    función que predice el valor de la energía para un dado cif
+    """
+    jarvis_features = from_cif_to_jarvis(path, cif)
+    jarvis_features = jarvis_features[[best_features_names]]
+
+    standard = Normalizer()
+    jarvis_features = pd.DataFrame(standard.transform(jarvis_features))
+
+    predict = fit_model.predict(jarvis_features)
+
+    return predict
+    
 
 
 def get_columns(dataset):
