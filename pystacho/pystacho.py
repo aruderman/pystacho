@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 # coding: utf-8
+import os
 
-import pandas as pd
 import matplotlib.pyplot as plt
-from matminer.featurizers.structure import JarvisCFID
-import pymatgen as mp
 import numpy as np
-from scipy.sparse.construct import random
+import pandas as pd
+import pymatgen as mp
 import seaborn as sns
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import Normalizer
 from lightgbm.sklearn import LGBMRegressor
+from matminer.featurizers.structure import JarvisCFID
+from sklearn.cluster import KMeans
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from os import join
+from sklearn.preprocessing import Normalizer
 
 
 def import_dataset(nombre):
@@ -26,7 +25,7 @@ def import_dataset(nombre):
         mp_files = [pd.read_csv(path + f"mp{s}.csv.bz2") for s in range(1, 4)]
         dataset = pd.concat(mp_files, ignore_index=True)
 
-    elif nombre == 'MP_filter':
+    elif nombre == "MP_filter":
 
         dataset = pd.read_csv(path + "mp_filter.csv.bz2", ignore_index=True)
 
@@ -76,7 +75,6 @@ def get_important_features(model, target, n_jobs, n_features):
     if model == 'lgbm':
         fit_model = LGBMRegressor(n_estimators=2000, n_jobs=n_jobs)
         fit_model.fit(x, y)
-  
 
     best_features_index = np.absolute(fit_model.feature_importances_).argsort()
     best_features_index = best_features_index[-n_features:][::1]
@@ -93,7 +91,7 @@ def plot_best_features(best_features_names, best_features_values):
     plt.show()
 
 
-def train_model(model, target, best_features_names, **kwargs):
+def train_model(model, target, best_features_names, n_jobs, **kwargs):
     """
     función que entrena los modelos según los targets y las best_features
     """
@@ -112,24 +110,29 @@ def train_model(model, target, best_features_names, **kwargs):
     x.columns = names
 
     x = x[[best_features_names]]
-    X_train, X_valid, y_train, y_valid = train_test_split(x, y, test_size=0.2, random_state=0)
+    x_train, x_valid, y_train, y_valid = train_test_split(x, y,
+                                                          test_size=0.2,
+                                                          random_state=0)
 
     if model == 'lgbm':
-        fit_model = LGBMRegressor(n_estimators=2000, n_jobs=n_jobs) #faltaría agregar más parámetros
-        fit_model.fit(X_train, y_train)
-        y_train_pred = fit_model.predict(X_train)
-        y_valid_pred = fit_model.predict(X_valid)
+        # acá faltaría agregar más parámetros
+        fit_model = LGBMRegressor(n_estimators=2000, n_jobs=n_jobs)
+        fit_model.fit(x_train, y_train)
+        y_train_pred = fit_model.predict(x_train)
+        y_valid_pred = fit_model.predict(x_valid)
 
         print('Conjunto de entrenamiento: modelo LGBMRegressor_red')
-        print('R2: ', r2_score(y_train,y_train_pred))
-        print('MAE: ', mean_absolute_error(y_train,y_train_pred))
-        print('MSE: ', mean_squared_error(y_train,y_train_pred, squared=False))
+        print('R2: ', r2_score(y_train, y_train_pred))
+        print('MAE: ', mean_absolute_error(y_train, y_train_pred))
+        print('MSE: ', mean_squared_error(y_train, y_train_pred,
+                                          squared=False))
 
         print('Conjunto de validación: modelo LGBMRegressor_red')
-        print('R2: ', r2_score(y_valid,y_valid_pred))
-        print('MAE: ', mean_absolute_error(y_valid,y_valid_pred))
-        print('MSE: ', mean_squared_error(y_valid,y_valid_pred, squared=False))
-          
+        print('R2: ', r2_score(y_valid, y_valid_pred))
+        print('MAE: ', mean_absolute_error(y_valid, y_valid_pred))
+        print('MSE: ', mean_squared_error(y_valid, y_valid_pred,
+                                          squared=False))
+
     return fit_model, standard
 
 
@@ -138,16 +141,18 @@ def from_cif_to_jarvis(path, cif):
     transforma un archivo cif en una fila jarvis
     """
     jarvis_features = []
-    
+
     jarviscfid = JarvisCFID()
+    # names no se usa ??
     names = jarviscfid.feature_labels()
-    
-    cif_structure = mp.Structure.from_file(join(path, cif))
+
+    cif_structure = mp.Structure.from_file(os.join(path, cif))
     cif_feature = jarviscfid.featurize(cif_structure)
-    
+
     jarvis_features.append(cif_feature)
 
     return jarvis_features
+
 
 def fit_data(path, cif, fit_model, best_features_names, standard):
     """
@@ -162,7 +167,6 @@ def fit_data(path, cif, fit_model, best_features_names, standard):
     predict = fit_model.predict(jarvis_features)
 
     return predict
-    
 
 
 def get_columns(dataset):
@@ -184,7 +188,7 @@ def displot(dataset, column):
     plt.show()
 
 
-def displot2D(dataset, column1, column2, kind):
+def displot2d(dataset, column1, column2, kind):
     """
     función para gráficar una distribución de valores 2D a partir de las dos
     columnas especificadas
@@ -223,7 +227,7 @@ if __name__ == "__main__":
     print(MP_db.head())
     print(get_columns(MP_db))
     displot(MP_db, 'energy_per_atom')
-    displot2D(MP_db, 'energy', 'energy_per_atom', 'kde')
+    displot2d(MP_db, 'energy', 'energy_per_atom', 'kde')
     cluster_inertia(MP_db, 'energy', 'energy_per_atom')
     plot_clusters(MP_db, 'energy', 'energy_per_atom', 5)
 
