@@ -150,6 +150,7 @@ def from_cif_to_jarvis(path, cif):
     cif_feature = jarviscfid.featurize(cif_structure)
 
     jarvis_features.append(cif_feature)
+    jarvis_features.columns = names
 
     return jarvis_features
 
