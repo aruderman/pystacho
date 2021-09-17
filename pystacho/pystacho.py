@@ -188,7 +188,7 @@ def displot(dataset, column):
     se especifique
     """
     ax = sns.displot(data=dataset, x=column)
-    plt.show()
+    return ax
 
 
 def displot2d(dataset, column1, column2, kind):
@@ -197,7 +197,7 @@ def displot2d(dataset, column1, column2, kind):
     columnas especificadas
     """
     ax = sns.displot(data=dataset, x=column1, y=column2, kind=kind)
-    plt.show()
+    return ax
 
 
 def cluster_inertia(dataset, column1, column2):
@@ -222,7 +222,7 @@ def plot_clusters(dataset, column1, column2, n_clusters):
     dataset = dataset[[column1, column2]]
     labels = KMeans(n_clusters).fit(dataset).labels_
     ax = sns.scatterplot(data=dataset, x=column1, y=column2, hue=labels)
-    plt.show()
+    return ax
 
 
 if __name__ == "__main__":
@@ -231,10 +231,13 @@ if __name__ == "__main__":
     MP_db = import_dataset(nombre="MP_db")
     print(MP_db.head())
     print(get_columns(MP_db))
-    displot(MP_db, "energy_per_atom")
-    displot2d(MP_db, "energy", "energy_per_atom", "kde")
+    ax = displot(MP_db, "energy_per_atom")
+    plt.show()
+    ax = displot2d(MP_db, "energy", "energy_per_atom", "kde")
+    plt.show()
     cluster_inertia(MP_db, "energy", "energy_per_atom")
     plot_clusters(MP_db, "energy", "energy_per_atom", 5)
+    plt.show()
 
     # main jarvis
     jarvis = import_dataset(nombre="jarvis")
