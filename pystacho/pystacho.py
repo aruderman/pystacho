@@ -19,7 +19,7 @@ def import_dataset(nombre):
     """
     función para importar datasets del materials project o features jarvis
     """
-    path = "./datasets/"
+    path = os.path.abspath(os.path.dirname(__file__)) + "/datasets/"
     if nombre == "MP_db":
 
         mp_files = [pd.read_csv(path + f"mp{s}.csv.bz2") for s in range(1, 4)]
