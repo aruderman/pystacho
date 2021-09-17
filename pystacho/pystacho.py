@@ -39,17 +39,17 @@ def import_dataset(nombre):
         jarviscfid = JarvisCFID()
         names = jarviscfid.feature_labels()
         dataset = dataset.drop(dataset.columns[-1], axis=1)
-        dataset.columns = ['Formula'] + names
+        dataset.columns = ["Formula"] + names
 
     return dataset
 
 
 def load_target(target):
-    """"
+    """ "
     Cargo las variables de target para hacer las predicciones y calcular las
     features relevantes por target
     """
-    target = pd.read_csv(f'./target/{target}.csv')
+    target = pd.read_csv(f"./target/{target}.csv")
     return target
 
 
@@ -61,7 +61,7 @@ def get_important_features(model, target, n_jobs, n_features):
     target = load_target(target)
     y = target.iloc[:, -1].tolist()
 
-    jarvis = import_dataset('jarvis')
+    jarvis = import_dataset("jarvis")
     x = jarvis[~target.iloc[:, -1].isnull()]
     x = x.drop(x.columns[0], axis=1)
 
@@ -72,7 +72,7 @@ def get_important_features(model, target, n_jobs, n_features):
     names = jarviscfid.feature_labels()
     x.columns = names
 
-    if model == 'lgbm':
+    if model == "lgbm":
         fit_model = LGBMRegressor(n_estimators=2000, n_jobs=n_jobs)
         fit_model.fit(x, y)
 
@@ -98,7 +98,7 @@ def train_model(model, target, best_features_names, n_jobs, **kwargs):
     target = load_target(target)
     y = target.iloc[:, -1].tolist()
 
-    jarvis = import_dataset('jarvis')
+    jarvis = import_dataset("jarvis")
     x = jarvis[~target.iloc[:, -1].isnull()]
     x = x.drop(x.columns[0], axis=1)
 
@@ -110,28 +110,30 @@ def train_model(model, target, best_features_names, n_jobs, **kwargs):
     x.columns = names
 
     x = x[[best_features_names]]
-    x_train, x_valid, y_train, y_valid = train_test_split(x, y,
-                                                          test_size=0.2,
-                                                          random_state=0)
+    x_train, x_valid, y_train, y_valid = train_test_split(
+        x, y, test_size=0.2, random_state=0
+    )
 
-    if model == 'lgbm':
+    if model == "lgbm":
         # acá faltaría agregar más parámetros
         fit_model = LGBMRegressor(n_estimators=2000, n_jobs=n_jobs)
         fit_model.fit(x_train, y_train)
         y_train_pred = fit_model.predict(x_train)
         y_valid_pred = fit_model.predict(x_valid)
 
-        print('Conjunto de entrenamiento: modelo LGBMRegressor_red')
-        print('R2: ', r2_score(y_train, y_train_pred))
-        print('MAE: ', mean_absolute_error(y_train, y_train_pred))
-        print('MSE: ', mean_squared_error(y_train, y_train_pred,
-                                          squared=False))
+        print("Conjunto de entrenamiento: modelo LGBMRegressor_red")
+        print("R2: ", r2_score(y_train, y_train_pred))
+        print("MAE: ", mean_absolute_error(y_train, y_train_pred))
+        print(
+            "MSE: ", mean_squared_error(y_train, y_train_pred, squared=False)
+        )
 
-        print('Conjunto de validación: modelo LGBMRegressor_red')
-        print('R2: ', r2_score(y_valid, y_valid_pred))
-        print('MAE: ', mean_absolute_error(y_valid, y_valid_pred))
-        print('MSE: ', mean_squared_error(y_valid, y_valid_pred,
-                                          squared=False))
+        print("Conjunto de validación: modelo LGBMRegressor_red")
+        print("R2: ", r2_score(y_valid, y_valid_pred))
+        print("MAE: ", mean_absolute_error(y_valid, y_valid_pred))
+        print(
+            "MSE: ", mean_squared_error(y_valid, y_valid_pred, squared=False)
+        )
 
     return fit_model, standard
 
@@ -175,7 +177,7 @@ def get_columns(dataset):
     función que dice el nombre de las columnas del dataset que le paso
     """
     columns = dataset.columns.tolist()
-    columns_df = pd.DataFrame({'Columns': columns})
+    columns_df = pd.DataFrame({"Columns": columns})
 
     return columns_df
 
@@ -203,9 +205,11 @@ def cluster_inertia(dataset, column1, column2):
     cluster inertia KMeans
     """
     dataset = dataset[[column1, column2]]
-    scores = [KMeans(n_clusters=i+2).fit(dataset).inertia_ for i in range(10)]
+    scores = [
+        KMeans(n_clusters=i + 2).fit(dataset).inertia_ for i in range(10)
+    ]
     plt.plot(np.arange(2, 12), scores)
-    plt.xlabel('Number of clusters')
+    plt.xlabel("Number of clusters")
     plt.ylabel("Inertia")
     plt.title("Inertia of k-Means versus number of clusters")
     plt.show()
@@ -224,14 +228,14 @@ def plot_clusters(dataset, column1, column2, n_clusters):
 if __name__ == "__main__":
 
     # main de materials project
-    MP_db = import_dataset(nombre='MP_db')
+    MP_db = import_dataset(nombre="MP_db")
     print(MP_db.head())
     print(get_columns(MP_db))
-    displot(MP_db, 'energy_per_atom')
-    displot2d(MP_db, 'energy', 'energy_per_atom', 'kde')
-    cluster_inertia(MP_db, 'energy', 'energy_per_atom')
-    plot_clusters(MP_db, 'energy', 'energy_per_atom', 5)
+    displot(MP_db, "energy_per_atom")
+    displot2d(MP_db, "energy", "energy_per_atom", "kde")
+    cluster_inertia(MP_db, "energy", "energy_per_atom")
+    plot_clusters(MP_db, "energy", "energy_per_atom", 5)
 
     # main jarvis
-    jarvis = import_dataset(nombre='jarvis')
+    jarvis = import_dataset(nombre="jarvis")
     print(jarvis)
