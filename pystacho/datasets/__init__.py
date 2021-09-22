@@ -36,14 +36,14 @@ PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 # ============================================================================
 
 
-def load_jarvis(nombre):
+def load_jarvis():
     """
     This dataset contains 42000 crystal structures obteined from the Materials
     Project database and projected into 1555 features using the JarvisCFID()
     featurizer from the matminer library
     """
     jarvis_files = [
-        pd.read_csv(PATH + f"jarvis{s}.csv.bz2") for s in range(11)
+        pd.read_csv(PATH / f"jarvis{s}.csv.bz2") for s in range(11)
     ]
     dataset = pd.concat(jarvis_files, ignore_index=True)
 
@@ -59,13 +59,13 @@ def load_jarvis(nombre):
     return dataset
 
 
-def load_mpdb(nombre):
+def load_mpdb():
     """
     This dataset contains 140000 Materials Project structures and its
     calculated properties.
     """
     mp_files = [
-        pd.read_csv(PATH + f"mp{s}.csv.bz2", compression="bz2")
+        pd.read_csv(PATH / f"mp{s}.csv.bz2", compression="bz2")
         for s in range(1, 4)
     ]
     dataset = pd.concat(mp_files, ignore_index=True)
@@ -73,7 +73,7 @@ def load_mpdb(nombre):
     return dataset
 
 
-def load_mpdb_filter(nombre):
+def load_mpdb_filter():
     """
     This dataset is contains 42000 structures with the same features as the
     original Materials Project dataset.
@@ -82,7 +82,9 @@ def load_mpdb_filter(nombre):
     worked
     """
     dataset = pd.read_csv(
-        PATH + "mp_filter.csv.bz2", ignore_index=True, compression="bz2"
+        PATH / "target" / "mp_filter.csv.bz2",
+        ignore_index=True,
+        compression="bz2",
     )
 
     return dataset
