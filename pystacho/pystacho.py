@@ -15,44 +15,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import Normalizer
 
 
-# def import_dataset(nombre):
-#     """
-#     función para importar datasets del materials project o features jarvis
-#     """
-#     path = os.path.abspath(os.path.dirname(__file__)) + "/datasets/"
-#     if nombre == "MP_db":
-
-#         mp_files = [pd.read_csv(path + f"mp{s}.csv.bz2") for s in range(1, 4)]
-#         dataset = pd.concat(mp_files, ignore_index=True)
-
-#     elif nombre == "MP_filter":
-
-#         dataset = pd.read_csv(path + "mp_filter.csv.bz2", ignore_index=True)
-
-#     elif nombre == "jarvis":
-
-#         jarvis_files = [
-#             pd.read_csv(path + f"jarvis{s}.csv.bz2") for s in range(11)
-#         ]
-#         dataset = pd.concat(jarvis_files, ignore_index=True)
-
-#         jarviscfid = JarvisCFID()
-#         names = jarviscfid.feature_labels()
-#         dataset = dataset.drop(dataset.columns[-1], axis=1)
-#         dataset.columns = ["Formula"] + names
-
-#     return dataset
-
-
-def load_target(target):
-    """ "
-    Cargo las variables de target para hacer las predicciones y calcular las
-    features relevantes por target
-    """
-    target = pd.read_csv(f"./target/{target}.csv")
-    return target
-
-
 def get_important_features(model, target, n_jobs, n_features):
     """
     Selecciono las filas de jarvis con valores en la variable target y
