@@ -20,7 +20,7 @@
 import os
 import pathlib
 
-from setuptools import setup  # noqa
+from setuptools import setup
 
 # =============================================================================
 # CONSTANTS
@@ -64,11 +64,7 @@ setup(
     author=["Francisco Fernandez", "Benjamin Marcologno", "Andrés Ruderman"],
     author_email="andres.ruderman@gmail.com",
     url="https://github.com/aruderman/pystacho",
-    packages=[
-        "pystacho",
-        "pystacho.datasets",
-        "pystacho.datasets.target"
-    ],
+    packages=["pystacho", "pystacho.datasets", "pystacho.datasets.target"],
     license="The MIT License",
     install_requires=REQUIREMENTS,
     keywords=["pystacho"],

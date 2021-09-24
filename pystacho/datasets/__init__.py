@@ -94,5 +94,5 @@ def load_target(target):
     """ "
     Load the Materials Project dataset column chosen as target for ML
     """
-    target = pd.read_csv(f"./target/{target}.csv")
+    target = pd.read_csv(PATH / "target" / "{target}.csv")
     return target

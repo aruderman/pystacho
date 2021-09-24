@@ -187,22 +187,3 @@ def plot_clusters(dataset, column1, column2, n_clusters):
     labels = KMeans(n_clusters).fit(dataset).labels_
     ax = sns.scatterplot(data=dataset, x=column1, y=column2, hue=labels)
     return ax
-
-
-if __name__ == "__main__":
-
-    # main de materials project
-    MP_db = datasets.load_mpdb()
-    print(MP_db.head())
-    print(get_columns(MP_db))
-    ax = displot(MP_db, "energy_per_atom")
-    plt.show()
-    ax = displot2d(MP_db, "energy", "energy_per_atom", "kde")
-    plt.show()
-    cluster_inertia(MP_db, "energy", "energy_per_atom")
-    plot_clusters(MP_db, "energy", "energy_per_atom", 5)
-    plt.show()
-
-    # main jarvis
-    jarvis = datasets.load_jarvis()
-    print(jarvis)
