@@ -2,3 +2,5 @@
 *.egg-info/
 __pycache__/
 .tox/
+Pystacho-0.1.0/
+.coverage

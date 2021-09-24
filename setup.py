@@ -67,6 +67,7 @@ setup(
     packages=[
         "pystacho",
         "pystacho.datasets",
+        "pystacho.datasets.target"
     ],
     license="The MIT License",
     install_requires=REQUIREMENTS,
