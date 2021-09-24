@@ -14,16 +14,18 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import Normalizer
 
+from . import datasets
+
 
 def get_important_features(model, target, n_jobs, n_features):
     """
     Selecciono las filas de jarvis con valores en la variable target y
     calculo las features relevantes para esa variable
     """
-    target = load_target(target)
+    target = datasets.load_target(target)
     y = target.iloc[:, -1].tolist()
 
-    jarvis = import_dataset("jarvis")
+    jarvis = datasets.load_jarvis()
     x = jarvis[~target.iloc[:, -1].isnull()]
     x = x.drop(x.columns[0], axis=1)
 
@@ -57,10 +59,10 @@ def train_model(model, target, best_features_names, n_jobs, **kwargs):
     """
     función que entrena los modelos según los targets y las best_features
     """
-    target = load_target(target)
+    target = datasets.load_target(target)
     y = target.iloc[:, -1].tolist()
 
-    jarvis = import_dataset("jarvis")
+    jarvis = datasets.load_jarvis()
     x = jarvis[~target.iloc[:, -1].isnull()]
     x = x.drop(x.columns[0], axis=1)
 
@@ -190,7 +192,7 @@ def plot_clusters(dataset, column1, column2, n_clusters):
 if __name__ == "__main__":
 
     # main de materials project
-    MP_db = import_dataset(nombre="MP_db")
+    MP_db = datasets.load_mpdb()
     print(MP_db.head())
     print(get_columns(MP_db))
     ax = displot(MP_db, "energy_per_atom")
@@ -202,5 +204,5 @@ if __name__ == "__main__":
     plt.show()
 
     # main jarvis
-    jarvis = import_dataset(nombre="jarvis")
+    jarvis = datasets.load_jarvis()
     print(jarvis)
