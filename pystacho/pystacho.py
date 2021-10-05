@@ -57,7 +57,7 @@ def plot_best_features(best_features_names, best_features_values):
 
 def train_model(model, target, best_features_names, n_jobs, **kwargs):
     """
-    función que entrena los modelos según los targets y las best_features
+    Función que entrena los modelos según los targets y las best_features
     """
     target = datasets.load_target(target)
     y = target.iloc[:, -1].tolist()
@@ -79,7 +79,7 @@ def train_model(model, target, best_features_names, n_jobs, **kwargs):
     )
 
     if model == "lgbm":
-        # acá faltaría agregar más parámetros
+        # Acá faltaría agregar más parámetros
         fit_model = LGBMRegressor(n_estimators=2000, n_jobs=n_jobs)
         fit_model.fit(x_train, y_train)
         y_train_pred = fit_model.predict(x_train)
@@ -104,7 +104,7 @@ def train_model(model, target, best_features_names, n_jobs, **kwargs):
 
 def from_cif_to_jarvis(path, cif):
     """
-    transforma un archivo cif en una fila jarvis
+    Transforma un archivo cif en una fila jarvis
     """
     jarvis_features = []
 
@@ -123,7 +123,7 @@ def from_cif_to_jarvis(path, cif):
 
 def fit_data(path, cif, fit_model, best_features_names, standard):
     """
-    función que predice el valor de la energía para un dado cif
+    Función que predice el valor de la energía para un dado cif
     """
     jarvis_features = from_cif_to_jarvis(path, cif)
     jarvis_features = jarvis_features[[best_features_names]]
@@ -138,7 +138,7 @@ def fit_data(path, cif, fit_model, best_features_names, standard):
 
 def get_columns(dataset):
     """
-    función que dice el nombre de las columnas del dataset que le paso
+    Función que dice el nombre de las columnas del dataset que le paso
     """
     columns = dataset.columns.tolist()
     columns_df = pd.DataFrame({"Columns": columns})
@@ -148,7 +148,7 @@ def get_columns(dataset):
 
 def displot(dataset, column):
     """
-    función para graficar la distribución de los valores según la columna que
+    Función para graficar la distribución de los valores según la columna que
     se especifique
     """
     ax = sns.displot(data=dataset, x=column)
@@ -157,7 +157,7 @@ def displot(dataset, column):
 
 def displot2d(dataset, column1, column2, kind):
     """
-    función para gráficar una distribución de valores 2D a partir de las dos
+    Función para gráficar una distribución de valores 2D a partir de las dos
     columnas especificadas
     """
     ax = sns.displot(data=dataset, x=column1, y=column2, kind=kind)
@@ -166,7 +166,7 @@ def displot2d(dataset, column1, column2, kind):
 
 def cluster_inertia(dataset, column1, column2):
     """
-    cluster inertia KMeans
+    Cluster inertia KMeans
     """
     dataset = dataset[[column1, column2]]
     scores = [
