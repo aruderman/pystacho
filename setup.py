@@ -30,6 +30,7 @@ PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 
 
 REQUIREMENTS = [
+    "diskcache",
     "numpy",
     "pandas",
     "matplotlib",
