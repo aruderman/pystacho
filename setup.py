@@ -65,7 +65,7 @@ setup(
     author=["Francisco Fernandez", "Benjamin Marcologno", "Andrés Ruderman"],
     author_email="andres.ruderman@gmail.com",
     url="https://github.com/aruderman/pystacho",
-    packages=["pystacho", "pystacho.datasets", "pystacho.datasets.target"],
+    packages=["pystacho"],
     license="The MIT License",
     install_requires=REQUIREMENTS,
     keywords=["pystacho"],
@@ -80,5 +80,5 @@ setup(
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Scientific/Engineering",
     ],
-    include_package_data=True,
+    # include_package_data=True,
 )
