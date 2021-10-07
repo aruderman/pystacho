@@ -29,7 +29,6 @@ from matminer.featurizers.structure import JarvisCFID
 # CONSTANTS
 # ============================================================================
 
-CACHE = dcache.Cache(directory="./_cache")
 URL = "https://github.com/aruderman/pystacho_datasets/raw/main/"
 
 # ============================================================================
@@ -37,19 +36,27 @@ URL = "https://github.com/aruderman/pystacho_datasets/raw/main/"
 # ============================================================================
 
 
-def get(dataset_files, key="example", force=False, expire=2.628e6):
+def get(
+    dataset_files,
+    directory="./_cache",
+    key="example",
+    force=False,
+    expire=2.628e6,
+):
     """
     dataset_files is a list with the file names
     """
+    cache = dcache.Cache(directory=directory)
+
     key = dcache.core.args_to_key(
         base=("pystacho", key), args=(URL,), kwargs={}, typed=False
     )
 
-    CACHE.expire()
+    cache.expire()
     value = (
         dcache.core.ENOVAL
         if force
-        else CACHE.get(key, default=dcache.core.ENOVAL)
+        else cache.get(key, default=dcache.core.ENOVAL)
     )
 
     if value is dcache.core.ENOVAL:
@@ -62,7 +69,7 @@ def get(dataset_files, key="example", force=False, expire=2.628e6):
 
         value = pd.concat(dataset, ignore_index=True)
 
-    CACHE.set(key, value, tag="Dataframe", expire=expire)
+    cache.set(key, value, tag="Dataframe", expire=expire)
 
     return value
 
