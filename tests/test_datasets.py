@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 #
+# HAY QUE ROBUSTECER ESTOS TESTS
+#
 # la primera vez que se corre es muy lento, después queda cacheado
 # quizás haya una forma mejor de hacerlo ...
 
 import numpy as np
 import pandas as pd
+from matminer.featurizers.structure import JarvisCFID
 
 import pystacho.datasets
 
@@ -41,3 +44,12 @@ def test_load_mpdb_filter():
     assert (
         result["e_above_hull"] >= np.zeros(len(result["e_above_hull"]))
     ).any()
+
+
+# hay una forma de pasar con un decorador los distintos strings de target
+# que quiero y reducir el código ...
+def test_load_jarvis():
+
+    result = pystacho.datasets.load_jarvis()
+    assert isinstance(result, pd.DataFrame)
+    assert (result.keys() == ["Formula"] + JarvisCFID().feature_labels()).any()
