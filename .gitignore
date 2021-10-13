@@ -4,4 +4,5 @@ __pycache__/
 .tox/
 Pystacho-0.1.0/
 pystacho/_cache/
+_cache/
 .coverage
