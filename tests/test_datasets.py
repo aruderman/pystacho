@@ -24,9 +24,7 @@ def test_load_mpdb():
     np.testing.assert_almost_equal(
         result["formation_energy_per_atom"].mean(), -1.374002, 6
     )
-    assert (
-        result["e_above_hull"] >= np.zeros(len(result["e_above_hull"]))
-    ).any()
+    np.testing.assert_almost_equal(result["e_above_hull"].mean(), 0.181353, 6)
 
 
 def test_load_mpdb_filter():
@@ -43,13 +41,11 @@ def test_load_mpdb_filter():
     )
     assert (
         result["e_above_hull"] >= np.zeros(len(result["e_above_hull"]))
-    ).any()
+    ).all()
 
 
-# hay una forma de pasar con un decorador los distintos strings de target
-# que quiero y reducir el código ...
 def test_load_jarvis():
 
     result = pystacho.datasets.load_jarvis()
     assert isinstance(result, pd.DataFrame)
-    assert (result.keys() == ["Formula"] + JarvisCFID().feature_labels()).any()
+    assert (result.keys() == ["Formula"] + JarvisCFID().feature_labels()).all()
