@@ -12,7 +12,7 @@
 # ============================================================================
 
 """
-The datasets module includes utilities to load datasets from materials project
+The datasets module includes utilities to fetch datasets from materials project
 and its projection using the jarvisCFID.
 """
 
@@ -20,7 +20,9 @@ and its projection using the jarvisCFID.
 # IMPORTS
 # ============================================================================
 
-# import requests
+import os
+import pathlib
+
 import diskcache as dcache
 import pandas as pd
 from matminer.featurizers.structure import JarvisCFID
@@ -31,25 +33,30 @@ from matminer.featurizers.structure import JarvisCFID
 
 URL = "https://github.com/aruderman/pystacho_datasets/raw/main/"
 
+PYSTACHO_CACHE_PATH = pathlib.Path(
+    os.path.expanduser(os.path.join("~", ".pystacho_cache"))
+)
+
 # ============================================================================
 # FUNCTIONS
 # ============================================================================
 
 
-def get(
+def _from_cache(
     dataset_files,
-    directory="./_cache",
-    key="example",
+    tag,
+    cache_path=PYSTACHO_CACHE_PATH,
     force=False,
     expire=2.628e6,
 ):
     """
-    dataset_files is a list with the file names
+    dataset_files is a list with the file names and tag is the key of the
+    cache
     """
-    cache = dcache.Cache(directory=directory)
+    cache = dcache.Cache(directory=cache_path)
 
     key = dcache.core.args_to_key(
-        base=("pystacho", key), args=(URL,), kwargs={}, typed=False
+        base=("pystacho", tag), args=(URL,), kwargs={}, typed=False
     )
 
     cache.expire()
@@ -60,8 +67,6 @@ def get(
     )
 
     if value is dcache.core.ENOVAL:
-        # response = requests.get(url)
-        # value = response.text
         dataset = []
         for dfile in dataset_files:
             print("Caching data:", URL + dfile)
@@ -74,17 +79,17 @@ def get(
     return value
 
 
-def load_mpdb(key="mpdb", **kwargs):
+def fetch_mpdb(key="mpdb", **kwargs):
     """
     This dataset contains 140000 Materials Project structures and its
     calculated properties.
     """
     mp_files = [f"mp{i}.csv.bz2" for i in range(1, 4)]
 
-    return get(mp_files, key=key, **kwargs)
+    return _from_cache(mp_files, key, **kwargs)
 
 
-def load_jarvis(key="jarvis", **kwargs):
+def fetch_jarvis(key="jarvis", **kwargs):
     """
     This dataset contains 42000 crystal structures obteined from the Materials
     Project database and projected into 1555 features using the JarvisCFID()
@@ -92,7 +97,7 @@ def load_jarvis(key="jarvis", **kwargs):
     """
     jarvis_files = [f"jarvis{i}.csv.bz2" for i in range(11)]
 
-    dataset = get(jarvis_files, key=key, **kwargs)
+    dataset = _from_cache(jarvis_files, key, **kwargs)
 
     jarviscfid = JarvisCFID()
 
@@ -104,7 +109,7 @@ def load_jarvis(key="jarvis", **kwargs):
     return dataset
 
 
-def load_mpdb_filter(key="mp_filter", **kwargs):
+def fetch_mpdb_filter(key="mp_filter", **kwargs):
     """
     This dataset is contains 42000 structures with the same features as the
     original Materials Project dataset.
@@ -114,15 +119,14 @@ def load_mpdb_filter(key="mp_filter", **kwargs):
     """
     filter_file = ["mp_filter.csv.bz2"]
 
-    return get(filter_file, key=key, **kwargs)
+    return _from_cache(filter_file, key, **kwargs)
 
 
-def load_target(target, key=None, **kwargs):
+def fetch_target(target, key=None, **kwargs):
     """
     Load the Materials Project dataset column chosen as target for ML
     """
     target_file = [f"{target}.csv"]
-    if key is None:
-        key = f"{target}"
+    tag = f"{target}" if key is None else key
 
-    return get(target_file, key=key, **kwargs)
+    return _from_cache(target_file, tag, **kwargs)

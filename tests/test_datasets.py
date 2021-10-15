@@ -12,9 +12,9 @@ from matminer.featurizers.structure import JarvisCFID
 import pystacho.datasets
 
 
-def test_load_mpdb():
+def test_fetch_mpdb():
 
-    result = pystacho.datasets.load_mpdb()
+    result = pystacho.datasets.fetch_mpdb()
 
     assert isinstance(result, pd.DataFrame)
     np.testing.assert_almost_equal(result["energy"].mean(), -180.367320, 6)
@@ -27,9 +27,9 @@ def test_load_mpdb():
     np.testing.assert_almost_equal(result["e_above_hull"].mean(), 0.181353, 6)
 
 
-def test_load_mpdb_filter():
+def test_fetch_mpdb_filter():
 
-    result = pystacho.datasets.load_mpdb_filter()
+    result = pystacho.datasets.fetch_mpdb_filter()
 
     assert isinstance(result, pd.DataFrame)
     np.testing.assert_almost_equal(result["energy"].mean(), -165.758806, 6)
@@ -44,8 +44,8 @@ def test_load_mpdb_filter():
     ).all()
 
 
-def test_load_jarvis():
+def test_fetch_jarvis():
 
-    result = pystacho.datasets.load_jarvis()
+    result = pystacho.datasets.fetch_jarvis()
     assert isinstance(result, pd.DataFrame)
     assert (result.keys() == ["Formula"] + JarvisCFID().feature_labels()).all()
