@@ -22,10 +22,10 @@ def get_important_features(model, target, n_jobs, n_features):
     Selecciono las filas de jarvis con valores en la variable target y
     calculo las features relevantes para esa variable
     """
-    target = datasets.load_target(target)
+    target = datasets.fetch_target(target)
     y = target.iloc[:, -1].tolist()
 
-    jarvis = datasets.load_jarvis()
+    jarvis = datasets.fetch_jarvis()
     x = jarvis[~target.iloc[:, -1].isnull()]
     x = x.drop(x.columns[0], axis=1)
 
@@ -59,10 +59,10 @@ def train_model(model, target, best_features_names, n_jobs, **kwargs):
     """
     Función que entrena los modelos según los targets y las best_features
     """
-    target = datasets.load_target(target)
+    target = datasets.fetch_target(target)
     y = target.iloc[:, -1].tolist()
 
-    jarvis = datasets.load_jarvis()
+    jarvis = datasets.fetch_jarvis()
     x = jarvis[~target.iloc[:, -1].isnull()]
     x = x.drop(x.columns[0], axis=1)
 
