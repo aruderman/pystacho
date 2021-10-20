@@ -11,8 +11,9 @@ import pathlib
 import mock
 import numpy as np
 import pandas as pd
-import pystacho.datasets
 from matminer.featurizers.structure import JarvisCFID
+
+import pystacho.datasets
 
 TEST_DATA = pathlib.Path(
     os.path.join(os.path.abspath(os.path.dirname(__file__)), "test_data")
