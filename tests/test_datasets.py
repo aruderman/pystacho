@@ -5,39 +5,56 @@
 # la primera vez que se corre es muy lento, después queda cacheado
 # quizás haya una forma mejor de hacerlo ...
 
+import os
+import pathlib
+
+import mock
 import numpy as np
 import pandas as pd
+import pystacho.datasets
 from matminer.featurizers.structure import JarvisCFID
 
-import pystacho.datasets
+TEST_DATA = pathlib.Path(
+    os.path.join(os.path.abspath(os.path.dirname(__file__)), "test_data")
+)
 
 
 def test_fetch_mpdb():
 
-    result = pystacho.datasets.fetch_mpdb()
+    mp_path = TEST_DATA / "mp_test.csv.bz2"
+
+    mock_df = pd.read_csv(mp_path, compression="bz2")
+
+    with mock.patch("pandas.read_csv", return_value=mock_df):
+        result = pystacho.datasets.fetch_mpdb(force=True)
 
     assert isinstance(result, pd.DataFrame)
-    np.testing.assert_almost_equal(result["energy"].mean(), -180.367320, 6)
+    np.testing.assert_almost_equal(result["energy"].mean(), -15.616882, 6)
     np.testing.assert_almost_equal(
-        result["energy_per_atom"].mean(), -5.903126, 6
+        result["energy_per_atom"].mean(), -5.707032, 6
     )
     np.testing.assert_almost_equal(
-        result["formation_energy_per_atom"].mean(), -1.374002, 6
+        result["formation_energy_per_atom"].mean(), -0.539429, 6
     )
-    np.testing.assert_almost_equal(result["e_above_hull"].mean(), 0.181353, 6)
+    np.testing.assert_almost_equal(result["e_above_hull"].mean(), 0.068912, 6)
 
 
 def test_fetch_mpdb_filter():
 
-    result = pystacho.datasets.fetch_mpdb_filter()
+    mp_filter_path = TEST_DATA / "mp_filter_test.csv.bz2"
+
+    mock_df = pd.read_csv(mp_filter_path, compression="bz2")
+
+    with mock.patch("pandas.read_csv", return_value=mock_df):
+        result = pystacho.datasets.fetch_mpdb_filter(force=True)
 
     assert isinstance(result, pd.DataFrame)
-    np.testing.assert_almost_equal(result["energy"].mean(), -165.758806, 6)
+    np.testing.assert_almost_equal(result["energy"].mean(), -57.634227, 6)
     np.testing.assert_almost_equal(
-        result["energy_per_atom"].mean(), -5.795536, 6
+        result["energy_per_atom"].mean(), -6.673063, 6
     )
     np.testing.assert_almost_equal(
-        result["formation_energy_per_atom"].mean(), -1.420426, 6
+        result["formation_energy_per_atom"].mean(), -0.904769, 6
     )
     assert (
         result["e_above_hull"] >= np.zeros(len(result["e_above_hull"]))
@@ -46,6 +63,28 @@ def test_fetch_mpdb_filter():
 
 def test_fetch_jarvis():
 
-    result = pystacho.datasets.fetch_jarvis()
+    jarvis_path = TEST_DATA / "jarvis_test.csv.bz2"
+    jarvis_labels = ["Formula"] + JarvisCFID().feature_labels()
+
+    # saco la columna de los indices de mock_df porque en la base de jarvis
+    # no está, pero en jarvis_test sí...
+    mock_df = pd.read_csv(jarvis_path, compression="bz2")
+    mock_df = mock_df.drop(mock_df.columns[0], axis=1)
+
+    with mock.patch("pandas.read_csv", return_value=mock_df):
+        result = pystacho.datasets.fetch_jarvis(force=True)
+
     assert isinstance(result, pd.DataFrame)
-    assert (result.keys() == ["Formula"] + JarvisCFID().feature_labels()).all()
+    assert (result.keys() == jarvis_labels).all()
+    np.testing.assert_almost_equal(
+        result["jml_bp_mult_atom_rad"].mean(), 3196.4154, 4
+    )
+    np.testing.assert_almost_equal(
+        result["jml_hfus_add_bp"].mean(), 2041.962881, 6
+    )
+    np.testing.assert_almost_equal(
+        result["jml_elec_aff_mult_voro_coord"].mean(), 4.2255, 4
+    )
+    np.testing.assert_almost_equal(
+        result["jml_mol_vol_subs_atom_mass"].mean(), -75.310246, 6
+    )
