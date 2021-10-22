@@ -95,13 +95,28 @@ def test_fetch_mpdb_filter():
 @pytest.mark.parametrize(
     "target_name, mean_value",
     [
-        ("energy_per_atom", -5.795536),
-        ("formation_energy_per_atom", -1.420426),
+        ("elasticity.elastic_anisotropy", 4.866),
+        ("elasticity.G_Reuss", 54.666667),
+        ("elasticity.G_Voigt", 67.766667),
+        ("elasticity.G_Voigt_Reuss_Hill", 61.133333),
+        ("elasticity.G_VRH", 61.133333),
+        ("elasticity.K_Reuss", 95.533333),
+        ("elasticity.K_Voigt", 107.033333),
+        ("elasticity.K_Voigt_Reuss_Hill", 101.266667),
+        ("elasticity.K_VRH", 101.266667),
+        ("energy", -89.108629),
+        ("energy_per_atom", -6.168534),
+        ("formation_energy_per_atom", -1.047940),
     ],
 )
 def test_fetch_target(target_name, mean_value):
 
-    result = pystacho.datasets.fetch_target(target_name, force=True)
+    target_path = TEST_DATA / f"{target_name}_test.csv.bz2"
+
+    mock_df = pd.read_csv(target_path, compression="bz2")
+
+    with mock.patch("pandas.read_csv", return_value=mock_df):
+        result = pystacho.datasets.fetch_target(target_name, force=True)
 
     assert isinstance(result, pd.DataFrame)
     np.testing.assert_almost_equal(result[target_name].mean(), mean_value, 6)
