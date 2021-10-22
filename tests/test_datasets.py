@@ -7,8 +7,8 @@
 
 import os
 import pathlib
+from unittest import mock
 
-import mock
 import numpy as np
 import pandas as pd
 from matminer.featurizers.structure import JarvisCFID
