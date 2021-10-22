@@ -121,7 +121,7 @@ def fetch_target(target, key=None, **kwargs):
     """
     Load the Materials Project dataset column chosen as target for ML
     """
-    target_file = [f"{target}.csv"]
+    target_file = [f"{target}.csv.bz2"]
     tag = f"{target}" if key is None else key
 
     return _from_cache(target_file, tag, **kwargs)
