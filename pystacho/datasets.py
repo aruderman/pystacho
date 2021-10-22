@@ -98,13 +98,8 @@ def fetch_jarvis(key="jarvis", **kwargs):
     jarvis_files = [f"jarvis{i}.csv.bz2" for i in range(11)]
 
     dataset = _from_cache(jarvis_files, key, **kwargs)
-
-    jarviscfid = JarvisCFID()
-
-    names = jarviscfid.feature_labels()
-
     dataset = dataset.drop(dataset.columns[-1], axis=1)
-    dataset.columns = ["Formula"] + names
+    dataset.columns = ["Formula"] + JarvisCFID().feature_labels()
 
     return dataset
 
