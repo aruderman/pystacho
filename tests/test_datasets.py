@@ -1,9 +1,15 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#
-# HAY QUE ROBUSTECER ESTOS TESTS
-#
-# la primera vez que se corre es muy lento, después queda cacheado
-# quizás haya una forma mejor de hacerlo ...
+
+# This file is part of the
+#   pystacho Project (https://github.com/aruderman/pystacho/).
+# Copyright (c) 2021, Francisco Fernandez, Benjamín Marcolongo, Andrés Ruderman
+# License: MIT
+#   Full Text: https://github.com/aruderman/pystacho/LICENSE
+
+# ============================================================================
+# IMPORTS
+# ============================================================================
 
 import os
 import pathlib
@@ -16,9 +22,18 @@ from matminer.featurizers.structure import JarvisCFID
 
 import pystacho.datasets
 
+# ============================================================================
+# CONSTANTS
+# ============================================================================
+
 TEST_DATA = pathlib.Path(
     os.path.join(os.path.abspath(os.path.dirname(__file__)), "test_data")
 )
+
+
+# =============================================================================
+# TESTS
+# =============================================================================
 
 
 def test_fetch_mpdb():
