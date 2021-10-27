@@ -11,9 +11,9 @@
 # DOCS
 # ============================================================================
 
-"""
-The datasets module includes utilities to fetch datasets from materials project
-and its projection using the jarvisCFID.
+"""The datasets module includes utilities to fetch datasets.
+
+These are from materials project and its projection using the jarvisCFID.
 """
 
 # ============================================================================
@@ -49,9 +49,32 @@ def _from_cache(
     force=False,
     expire=2.628e6,
 ):
-    """
-    dataset_files is a list with the file names and tag is the key of the
-    cache
+    """To cache the dataset.
+
+    Parameters
+    ----------
+    dataset_files : list
+        With the file names
+
+    tag : str
+        The key of the cache, different for each function that calls
+        _from_cache
+
+    cache_path : str (default="~/.pystacho_cache/)
+        The path to the directory where the dataset is going to be cached
+
+    force : bool (default=False)
+        Force to save the dataset in the cache regardless if the key
+        already exists.
+
+    expire : float
+        Time to expire the dataset associtated with the key `tag`.
+
+
+    Returns
+    -------
+    value : pd.DataFrame
+        The result of calling this function or the cached dataframe
     """
     cache = dcache.Cache(directory=cache_path)
 
@@ -80,9 +103,20 @@ def _from_cache(
 
 
 def fetch_mpdb(key="mpdb", **kwargs):
-    """
-    This dataset contains 140000 Materials Project structures and its
-    calculated properties.
+    """Materials Project Database.
+
+    This dataset contains 140000 structures and its calculated properties
+    from DFT computations.
+
+    Parameters
+    ----------
+    key : str
+        The key of the cache.
+
+    Returns
+    -------
+    _from_cache : pd.DataFrame
+        The result of calling _from_cache function or the cached dataframe
     """
     mp_files = [f"mp{i}.csv.bz2" for i in range(1, 4)]
 
@@ -90,10 +124,21 @@ def fetch_mpdb(key="mpdb", **kwargs):
 
 
 def fetch_jarvis(key="jarvis", **kwargs):
-    """
+    """Jarvis calculations from cif structures of mpdb.
+
     This dataset contains 42000 crystal structures obteined from the Materials
     Project database and projected into 1555 features using the JarvisCFID()
-    featurizer from the matminer library
+    featurizer from the matminer library.
+
+    Parameters
+    ----------
+    key : str
+        The key of the cache.
+
+    Returns
+    -------
+    _from_cache : pd.DataFrame
+        The result of calling _from_cache function or the cached dataframe
     """
     jarvis_files = [f"jarvis{i}.csv.bz2" for i in range(11)]
 
@@ -105,12 +150,22 @@ def fetch_jarvis(key="jarvis", **kwargs):
 
 
 def fetch_mpdb_filter(key="mp_filter", **kwargs):
-    """
+    """Materials Project Database filtered.
+
     This dataset is contains 42000 structures with the same features as the
-    original Materials Project dataset.
-    The structures were filtered first by e_above_hull < 0.001 eV and then
-    choosing those in which JarvisCFID()
-    worked
+    original Materials Project dataset. The structures were filtered first
+    by e_above_hull < 0.001 eV and then choosing those in which JarvisCFID()
+    worked.
+
+    Parameters
+    ----------
+    key : str
+        The key of the cache.
+
+    Returns
+    -------
+    _from_cache : pd.DataFrame
+        The result of calling _from_cache function or the cached dataframe
     """
     filter_file = ["mp_filter.csv.bz2"]
 
@@ -118,8 +173,22 @@ def fetch_mpdb_filter(key="mp_filter", **kwargs):
 
 
 def fetch_target(target, key=None, **kwargs):
-    """
-    Load the Materials Project dataset column chosen as target for ML
+    """Choose an specific target of mpdb.
+
+    It should be determinated by some Machine Learning model.
+
+    Parameters
+    ----------
+    target : str
+        The name of the specific column.
+
+    key : str (default=str(target))
+        The key of the cache.
+
+    Returns
+    -------
+    _from_cache : pd.DataFrame
+        The result of calling _from_cache function or the cached dataframe
     """
     target_file = [f"{target}.csv.bz2"]
     tag = f"{target}" if key is None else key
