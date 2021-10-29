@@ -13,7 +13,8 @@
 
 """The datasets module includes utilities to fetch datasets.
 
-These are from materials project and its projection using the jarvisCFID.
+These are from materials project and its projection using the jarvisCFID
+from matminer.
 """
 
 # ============================================================================
@@ -60,15 +61,15 @@ def _from_cache(
         The key of the cache, different for each function that calls
         _from_cache
 
-    cache_path : str (default="~/.pystacho_cache/)
+    cache_path : str (default="~/.pystacho_cache/")
         The path to the directory where the dataset is going to be cached
 
     force : bool (default=False)
         Force to save the dataset in the cache regardless if the key
         already exists.
 
-    expire : float
-        Time to expire the dataset associtated with the key `tag`.
+    expire : float (default=2.628e6)
+        Time (in seconds) to expire the dataset associtated with the key `tag`.
 
 
     Returns
@@ -90,11 +91,11 @@ def _from_cache(
     )
 
     if value is dcache.core.ENOVAL:
-        dataset = []
-        for dfile in dataset_files:
-            print("Caching data:", URL + dfile)
-            dataset.append(pd.read_csv(URL + dfile, compression="bz2"))
-
+        print(f"Caching data from: {URL}")
+        dataset = [
+            pd.read_csv(URL + dfile, compression="bz2")
+            for dfile in dataset_files
+        ]
         value = pd.concat(dataset, ignore_index=True)
 
     cache.set(key, value, tag="Dataframe", expire=expire)
@@ -110,7 +111,7 @@ def fetch_mpdb(key="mpdb", **kwargs):
 
     Parameters
     ----------
-    key : str
+    key : str (default="mpdb")
         The key of the cache.
 
     Returns
@@ -132,7 +133,7 @@ def fetch_jarvis(key="jarvis", **kwargs):
 
     Parameters
     ----------
-    key : str
+    key : str (default="jarvis")
         The key of the cache.
 
     Returns
@@ -159,7 +160,7 @@ def fetch_mpdb_filter(key="mp_filter", **kwargs):
 
     Parameters
     ----------
-    key : str
+    key : str (default="mp_filter")
         The key of the cache.
 
     Returns
